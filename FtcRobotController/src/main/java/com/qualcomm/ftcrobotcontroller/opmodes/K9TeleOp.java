@@ -103,12 +103,12 @@ public class K9TeleOp extends OpMode {
 		 *    "servo_1" controls the arm joint of the manipulator.
 		 *    "servo_6" controls the claw joint of the manipulator.
 		 */
-		motorRight = hardwareMap.dcMotor.get("motor_2");
-		motorLeft = hardwareMap.dcMotor.get("motor_1");
+		motorRight = hardwareMap.dcMotor.get("front_right");
+		motorLeft = hardwareMap.dcMotor.get("front_left");
 		motorLeft.setDirection(DcMotor.Direction.REVERSE);
 		
-		arm = hardwareMap.servo.get("servo_1");
-		claw = hardwareMap.servo.get("servo_6");
+		arm = hardwareMap.servo.get("s1");
+		claw = hardwareMap.servo.get("s2");
 
 		// assign the starting position of the wrist and claw
 		armPosition = 0.2;

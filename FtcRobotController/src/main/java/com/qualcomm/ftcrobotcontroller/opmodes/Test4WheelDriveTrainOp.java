@@ -3,6 +3,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -11,36 +12,14 @@ import com.qualcomm.robotcore.util.Range;
  * Enables control of the robot via the gamepad
  */
 public class Test4WheelDriveTrainOp extends OpMode {
-
-    /*
-     * Note: the configuration of the servos is such that
-     * as the arm servo approaches 0, the arm position moves up (away from the floor).
-     * Also, as the claw servo approaches 0, the claw opens up (drops the game element).
-     */
-    // TETRIX VALUES.
-    //final static double ARM_MIN_RANGE  = 0.20;
-    //final static double ARM_MAX_RANGE  = 0.90;
-    final static double CLAW_MIN_RANGE  = 0.20;
-    final static double CLAW_MAX_RANGE  = 0.7;
-
-
-    // position of the arm servo.
-   // double armPosition;
-
-    // amount to change the arm servo position.
-   // double armDelta = 0.1;
-
-    // position of the claw servo
-   // double clawPosition;
-
-    // amount to change the claw servo position by
-  //  double clawDelta = 0.1;
-    //define DcMotors
+    //Drive motors
     DcMotor motorFrontRight,motorFrontLeft, motorBackRight, motorBackLeft;
-    Servo linearSliderTilt;
-    double linearPosition, linearDelta = 0.1;
-   // Servo claw;
-   // Servo arm;
+
+    // Motors for Hook and Pulley
+    DcMotor motorHookRight, motorHookLeft, motorPulley;
+
+    //Servos for linear Slider Tilt
+    Servo linearSliderRight, linearSliderLeft;
 
     /**
      * Constructor
@@ -63,30 +42,28 @@ public class Test4WheelDriveTrainOp extends OpMode {
 		 */
 
 		/*
-		 * For the demo Tetrix K9 bot we assume the following,
-		 *   There are two motors "motor_1" and "motor_2"
-		 *   "motor_1" is on the right side of the bot.
-		 *   "motor_2" is on the left side of the bot.
-		 *
-		 * We also assume that there are two servos "servo_1" and "servo_6"
-		 *    "servo_1" controls the arm joint of the manipulator.
-		 *    "servo_6" controls the claw joint of the manipulator.
+		 *   We have 4 drive motors, 2 motors for the hook and 1 foor pulley
+		 * We have two servos "linear_right" and "linear_left"
 		 */
-        motorFrontRight = hardwareMap.dcMotor.get("m1");
-        motorFrontLeft = hardwareMap.dcMotor.get("m2");
-        motorBackRight = hardwareMap.dcMotor.get("m3");
-        motorBackLeft = hardwareMap.dcMotor.get("m4");
+        motorFrontRight = hardwareMap.dcMotor.get("front_right");
+        motorFrontLeft = hardwareMap.dcMotor.get("front_left");
+        motorBackRight = hardwareMap.dcMotor.get("back_right");
+        motorBackLeft = hardwareMap.dcMotor.get("back_left");
+        motorHookLeft = hardwareMap.dcMotor.get("hook_left");
+        motorHookRight = hardwareMap.dcMotor.get("hook_right");
+        motorPulley = hardwareMap.dcMotor.get("pulley");
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
-        //arm = hardwareMap.servo.get("servo_1");
-        //claw = hardwareMap.servo.get("servo_6");
-        linearSliderTilt = hardwareMap.servo.get("s1");
-        linearPosition = 0.2;
+        //Right motor should be spinning counter clockwise for the spool to unwind
+        motorHookRight.setDirection(DcMotor.Direction.REVERSE);
 
-        // assign the starting position of the wrist and claw
-        //armPosition = 0.2;
-        //clawPosition = 0.2;
+        //reverse direction of pulley motor will result in channel going up
+        motorPulley.setDirection(DcMotor.Direction.REVERSE);
+
+        // Initialize Servo motors for the Linear Slider Tilt
+        linearSliderRight = hardwareMap.servo.get("linear_right");
+        linearSliderLeft = hardwareMap.servo.get("linear_left");
     }
 
     /*
@@ -96,8 +73,7 @@ public class Test4WheelDriveTrainOp extends OpMode {
      */
     @Override
     public void loop() {
-
-		/*
+        /*
 		 * Gamepad 1
 		 *
 		 * Gamepad 1 controls the motors via the left stick, and it controls the
@@ -106,73 +82,70 @@ public class Test4WheelDriveTrainOp extends OpMode {
 
         // tank drive
         // note that if y equal -1 then joystick is pushed all of the way forward.
-        float left = -gamepad1.left_stick_y;
-        float right = -gamepad1.right_stick_y;
+        // throttle:  left_stick_y ranges from -1 to 1, where -1 is full up,  and 1 is full down
+        // direction: left_stick_x ranges from -1 to 1, where -1 is full left and 1 is full right
+        float throttle = -gamepad1.left_stick_y;
+        float direction = gamepad1.left_stick_x;
+        float driveRight = throttle - direction;
+        float driveLeft = throttle + direction;
+
+        //Taking the average of left and right stick on gamepad2 for the hook movement
+        float hook = ((-gamepad2.right_stick_y)/2)+((-gamepad2.left_stick_y)/2);
+
 
         // clip the right/left values so that the values never exceed +/- 1
-        right = Range.clip(right, -1, 1);
-        left = Range.clip(left, -1, 1);
+        driveRight = Range.clip(driveRight, -1, 1);
+        driveLeft = Range.clip(driveLeft, -1, 1);
+        hook = Range.clip(hook, -1, 1);
 
         // scale the joystick value to make it easier to control
         // the robot more precisely at slower speeds.
-        right = (float)scaleInput(right);
-        left =  (float)scaleInput(left);
+        driveRight = (float)scaleInput(driveRight);
+        driveLeft = (float)scaleInput(driveLeft);
+        hook = (float)scaleInput(hook);
 
-        // write the values to the motors
-        motorFrontRight.setPower(right);
-        motorBackRight.setPower(right);
-        motorFrontLeft.setPower(left);
-        motorBackLeft.setPower(left);
+        // reduce power for the pulley motor to match the gear ratio
+        // of the gears attached to the gear motors.
+        float pulley = hook * 6 / 7;
 
-        // update the position of the arm.
-       if (gamepad1.a) {
-            // if the A button is pushed on gamepad1, increment the position of
-            // the arm servo.
-            linearPosition += linearDelta;
-           linearPosition = Range.clip(linearPosition, CLAW_MIN_RANGE, CLAW_MAX_RANGE);
+        // write the values to the drive motors
+        motorFrontRight.setPower(driveRight);
+        motorBackRight.setPower(driveRight);
+        motorFrontLeft.setPower(driveLeft);
+        motorBackLeft.setPower(driveLeft);
 
-           // write position values to the wrist and claw servo
-           linearSliderTilt.setPosition(linearPosition);
+        // set power for the Hook and pulley motors
+        if (hook != 0.0 && pulley != 0.0) {
+            motorHookLeft.setPower(hook);
+            motorHookRight.setPower(hook);
+            motorPulley.setPower(pulley);
         }
-/*
-        if (gamepad1.y) {
-            // if the Y button is pushed on gamepad1, decrease the position of
-            // the arm servo.
-            armPosition -= armDelta;
-        }
+        else {
+            if (gamepad2.a) {
+                motorPulley.setPower(-0.85);
+            }
 
-        // update the position of the claw
-        if (gamepad1.left_bumper) {
-            clawPosition += clawDelta;
-        }
-
-        if (gamepad1.left_trigger > 0.25) {
-            clawPosition -= clawDelta;
-        }
-
-        if (gamepad1.b) {
-            clawPosition -= clawDelta;
+            else if (gamepad2.y) {
+                motorHookRight.setPower(-0.85);
+                motorHookLeft.setPower(-0.85);
+            } else {
+                motorHookLeft.setPower(0.0);
+                motorHookRight.setPower(0.0);
+                motorPulley.setPower(0.0);
+            }
         }
 
-        // update the position of the claw
-        if (gamepad1.x) {
-            clawPosition += clawDelta;
+        // update the position of the linear tilt.
+        if (gamepad2.dpad_up ) {
+            linearSliderRight.setPosition(0.95);
+            linearSliderLeft.setPosition(0.05);
+        } else if (gamepad2.dpad_down) {
+            linearSliderRight.setPosition(0.05);
+            linearSliderLeft.setPosition(0.95);
+        } else if (gamepad2.left_bumper){
+            linearSliderRight.setPosition(0.50);
+            linearSliderLeft.setPosition(0.50);
         }
-
-        if (gamepad1.b) {
-            clawPosition -= clawDelta;
-        }
-
-        // clip the position values so that they never exceed their allowed range.
-        armPosition = Range.clip(armPosition, ARM_MIN_RANGE, ARM_MAX_RANGE);
-        clawPosition = Range.clip(clawPosition, CLAW_MIN_RANGE, CLAW_MAX_RANGE);
-
-        // write position values to the wrist and claw servo
-        arm.setPosition(armPosition);
-        claw.setPosition(clawPosition); */
-
-
-
 
 		/*
 		 * Send telemetry data back to driver station. Note that if we are using
@@ -180,12 +153,12 @@ public class Test4WheelDriveTrainOp extends OpMode {
 		 * will return a null value. The legacy NXT-compatible motor controllers
 		 * are currently write only.
 		 */
-
-            telemetry.addData("Text", "*** Robot Data***");
-      // telemetry.addData("arm", "arm:  " + String.format("%.2f", armPosition));
-        telemetry.addData("linearSliderTilt", "slider:  " + String.format("%.2f", linearPosition));
-        telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", left));
-        telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", right));
+        //telemetry.addData("Text", "*** Robot Data***");
+        telemetry.addData("Servo", "Right:  " + String.format("%.2f", linearSliderRight.getPosition()));
+        telemetry.addData("Servo", "Left:  " + String.format("%.2f", linearSliderLeft.getPosition()));
+        telemetry.addData("hook power", "hook:  " + String.format("%.2f", hook));
+        telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", driveLeft));
+        telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", driveRight));
     }
 
     /*
@@ -195,6 +168,7 @@ public class Test4WheelDriveTrainOp extends OpMode {
      */
     @Override
     public void stop() {
+
 
     }
 
