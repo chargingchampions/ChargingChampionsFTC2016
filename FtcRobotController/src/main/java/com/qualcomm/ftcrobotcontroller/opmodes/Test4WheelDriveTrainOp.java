@@ -21,6 +21,8 @@ public class Test4WheelDriveTrainOp extends OpMode {
     //Servos for linear Slider Tilt
     Servo linearSliderRight, linearSliderLeft;
 
+    //Servo rightZipLine;
+
     /**
      * Constructor
      */
@@ -55,15 +57,15 @@ public class Test4WheelDriveTrainOp extends OpMode {
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
-        //Right motor should be spinning counter clockwise for the spool to unwind
-        motorHookRight.setDirection(DcMotor.Direction.REVERSE);
-
         //reverse direction of pulley motor will result in channel going up
         motorPulley.setDirection(DcMotor.Direction.REVERSE);
 
         // Initialize Servo motors for the Linear Slider Tilt
         linearSliderRight = hardwareMap.servo.get("linear_right");
         linearSliderLeft = hardwareMap.servo.get("linear_left");
+        //rightZipLine = hardwareMap.servo.get("zipline");
+
+
     }
 
     /*
@@ -84,10 +86,8 @@ public class Test4WheelDriveTrainOp extends OpMode {
         // note that if y equal -1 then joystick is pushed all of the way forward.
         // throttle:  left_stick_y ranges from -1 to 1, where -1 is full up,  and 1 is full down
         // direction: left_stick_x ranges from -1 to 1, where -1 is full left and 1 is full right
-        float throttle = -gamepad1.left_stick_y;
-        float direction = gamepad1.left_stick_x;
-        float driveRight = throttle - direction;
-        float driveLeft = throttle + direction;
+        float driveLeft = -gamepad1.left_stick_y;
+        float driveRight = -gamepad1.right_stick_y;
 
         //Taking the average of left and right stick on gamepad2 for the hook movement
         float hook = ((-gamepad2.right_stick_y)/2)+((-gamepad2.left_stick_y)/2);
@@ -100,13 +100,13 @@ public class Test4WheelDriveTrainOp extends OpMode {
 
         // scale the joystick value to make it easier to control
         // the robot more precisely at slower speeds.
-        driveRight = (float)scaleInput(driveRight);
-        driveLeft = (float)scaleInput(driveLeft);
+        driveRight = (float)scaleInput(driveRight*0.75);
+        driveLeft = (float)scaleInput(driveLeft*0.75);
         hook = (float)scaleInput(hook);
 
         // reduce power for the pulley motor to match the gear ratio
         // of the gears attached to the gear motors.
-        float pulley = hook * 6 / 7;
+        float pulley = hook * 1 / 2;
 
         // write the values to the drive motors
         motorFrontRight.setPower(driveRight);
@@ -114,6 +114,18 @@ public class Test4WheelDriveTrainOp extends OpMode {
         motorFrontLeft.setPower(driveLeft);
         motorBackLeft.setPower(driveLeft);
 
+        if (gamepad1.dpad_up) {
+            motorFrontRight.setPower(0.65);
+            motorBackRight.setPower(0.65);
+            motorBackLeft.setPower(0.65);
+            motorFrontLeft.setPower(0.65);
+        }
+        else if (gamepad1.dpad_down) {
+            motorFrontRight.setPower(-0.65);
+            motorBackRight.setPower(-0.65);
+            motorBackLeft.setPower(-0.65);
+            motorFrontLeft.setPower(-0.65);
+        }
         // set power for the Hook and pulley motors
         if (hook != 0.0 && pulley != 0.0) {
             motorHookLeft.setPower(hook);
@@ -122,7 +134,7 @@ public class Test4WheelDriveTrainOp extends OpMode {
         }
         else {
             if (gamepad2.a) {
-                motorPulley.setPower(-0.85);
+                motorPulley.setPower(0.85);
             }
 
             else if (gamepad2.y) {
@@ -146,6 +158,12 @@ public class Test4WheelDriveTrainOp extends OpMode {
             linearSliderRight.setPosition(0.50);
             linearSliderLeft.setPosition(0.50);
         }
+/*
+        if (gamepad1.right_bumper) {
+            rightZipLine.setPosition(0.6);
+        } else {
+            rightZipLine.setPosition(0.5);
+        }*/
 
 		/*
 		 * Send telemetry data back to driver station. Note that if we are using
@@ -154,8 +172,8 @@ public class Test4WheelDriveTrainOp extends OpMode {
 		 * are currently write only.
 		 */
         //telemetry.addData("Text", "*** Robot Data***");
-        telemetry.addData("Servo", "Right:  " + String.format("%.2f", linearSliderRight.getPosition()));
-        telemetry.addData("Servo", "Left:  " + String.format("%.2f", linearSliderLeft.getPosition()));
+        //telemetry.addData("Servo", "Right:  " + String.format("%.2f", linearSliderRight.getPosition()));
+        //telemetry.addData("Servo", "Left:  " + String.format("%.2f", linearSliderLeft.getPosition()));
         telemetry.addData("hook power", "hook:  " + String.format("%.2f", hook));
         telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", driveLeft));
         telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", driveRight));
