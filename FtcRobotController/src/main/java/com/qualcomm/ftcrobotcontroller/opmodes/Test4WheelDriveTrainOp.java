@@ -172,8 +172,8 @@ public class Test4WheelDriveTrainOp extends OpMode {
 		 * are currently write only.
 		 */
         //telemetry.addData("Text", "*** Robot Data***");
-        //telemetry.addData("Servo", "Right:  " + String.format("%.2f", linearSliderRight.getPosition()));
-        //telemetry.addData("Servo", "Left:  " + String.format("%.2f", linearSliderLeft.getPosition()));
+        telemetry.addData("Servo", "Right:  " + String.format("%.2f", linearSliderRight.getPosition()));
+        telemetry.addData("Servo", "Left:  " + String.format("%.2f", linearSliderLeft.getPosition()));
         telemetry.addData("hook power", "hook:  " + String.format("%.2f", hook));
         telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", driveLeft));
         telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", driveRight));
