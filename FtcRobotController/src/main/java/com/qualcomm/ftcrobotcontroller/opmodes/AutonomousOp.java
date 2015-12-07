@@ -25,7 +25,11 @@ public class AutonomousOp extends LinearOpMode {
                 case 1:
                     if (! motorTask.isRunning()) {
                         //full power , forward for 8880
-                        motorTask.startMotor("step1 motor1", 1, 8880 , Direction.MOTOR_FORWARD);
+                        motorTask.startMotor("front_right", 1, 8880 , Direction.MOTOR_FORWARD);
+                        motorTask.startMotor("front_left", 1, 8880 , Direction.MOTOR_FORWARD);
+                        motorTask.startMotor("back_right", 1, 8880 , Direction.MOTOR_FORWARD);
+                        motorTask.startMotor("back_left", 1, 8880 , Direction.MOTOR_FORWARD);
+
                     }
                     if (motorTask.targetReached()) {
                         motorTask.stop();
@@ -36,7 +40,10 @@ public class AutonomousOp extends LinearOpMode {
                 case 2:
                     if (! motorTask.isRunning()) {
                         //  1/4 power backward for 1000
-                        motorTask.startMotor("step2 motor1",0.25, 1000 , Direction.MOTOR_BACKWARD);
+                        motorTask.startMotor("front_right", 1, 8880 , Direction.MOTOR_BACKWARD);
+                        motorTask.startMotor("front_left", 1, 8880 , Direction.MOTOR_BACKWARD);
+                        motorTask.startMotor("back_right", 1, 8880 , Direction.MOTOR_BACKWARD);
+                        motorTask.startMotor("back_left", 1, 8880 , Direction.MOTOR_BACKWARD);
                     }
                     if (motorTask.targetReached()) {
                         motorTask.stop();

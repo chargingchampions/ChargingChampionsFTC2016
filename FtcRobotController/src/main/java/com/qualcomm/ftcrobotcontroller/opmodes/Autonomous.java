@@ -1,38 +1,5 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-/* Copyright (c) 2014 Qualcomm Technologies Inc
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted (subject to the limitations in the disclaimer below) provided that
-the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this list
-of conditions and the following disclaimer.
-
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-Neither the name of Qualcomm Technologies Inc nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.
-
-NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
-LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-
-
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -123,14 +90,6 @@ public class Autonomous extends OpMode
     private PathSeg[]   mCurrentPath;     // Array to hold current path
     private int         mCurrentSeg;      // Index of the current leg in the current path
 
-
-    //--------------------------------------------------------------------------
-    // Demo Hardware
-    //--------------------------------------------------------------------------
-    public Autonomous()
-    {
-    }
-
     //--------------------------------------------------------------------------
     // init
     //--------------------------------------------------------------------------
@@ -203,7 +162,7 @@ public class Autonomous extends OpMode
                 {
                     // Display Diagnostic data for this state.
                     telemetry.addData("1", String.format("L %5d - R %5d ", getLeftPosition(),
-                            getRightPosition() ));
+                                                                           getRightPosition() ));
                 }
 
                 break;
@@ -219,9 +178,9 @@ public class Autonomous extends OpMode
                 {
                     // Display Diagnostic data for this state.
                     telemetry.addData("1", String.format("%d of %d. L %5d:%5s - R %5d:%5d ",
-                            mCurrentSeg, mCurrentPath.length,
-                            mLeftEncoderTarget, getLeftPosition(),
-                            mRightEncoderTarget, getRightPosition()));
+                                        mCurrentSeg, mCurrentPath.length,
+                                        mLeftEncoderTarget, getLeftPosition(),
+                                        mRightEncoderTarget, getRightPosition()));
                 }
                 break;
 
@@ -235,8 +194,8 @@ public class Autonomous extends OpMode
                 {
                     // Display Diagnostic data for this state.
                     telemetry.addData("1", String.format("%4.2f of %4.2f ",
-                            mLight.getLightDetected(),
-                            WHITE_THRESHOLD ));
+                                                         mLight.getLightDetected(),
+                                                         WHITE_THRESHOLD ));
                 }
 
                 break;
@@ -255,17 +214,17 @@ public class Autonomous extends OpMode
                     {
                         setDriveSpeed(0.2, 0.0);            // Scan Right
                         telemetry.addData("1", String.format("%4.2f --> %7d : %7d (%4.2f)" ,
-                                mLight.getLightDetected(),
-                                getLeftPosition(), getRightPosition(),
-                                mDistance.getLightDetected() ));
+                                                             mLight.getLightDetected(),
+                                                             getLeftPosition(), getRightPosition(),
+                                                             mDistance.getLightDetected() ));
                     }
                     else
                     {
                         setDriveSpeed(0.0, 0.2);            // Scan Left
                         telemetry.addData("1", String.format("%4.2f <-- %7d : %7d (%4.2f)",
-                                mLight.getLightDetected(),
-                                getLeftPosition(), getRightPosition(),
-                                mDistance.getLightDetected() ));
+                                                             mLight.getLightDetected(),
+                                                             getLeftPosition(), getRightPosition(),
+                                                             mDistance.getLightDetected() ));
                     }
                 }
                 break;
@@ -299,9 +258,9 @@ public class Autonomous extends OpMode
                 {
                     // Display Diagnostic data for this state.
                     telemetry.addData("1", String.format("%d of %d. L %5d:%5d - R %5d:%5d ",
-                            mCurrentSeg, mCurrentPath.length,
-                            mLeftEncoderTarget, getLeftPosition(),
-                            mRightEncoderTarget, getRightPosition()));
+                                                         mCurrentSeg, mCurrentPath.length,
+                                                         mLeftEncoderTarget, getLeftPosition(),
+                                                         mRightEncoderTarget, getRightPosition()));
                 }
                 break;
 
@@ -316,7 +275,7 @@ public class Autonomous extends OpMode
                 {
                     // Display Diagnostic data for this state.
                     telemetry.addData("1", String.format("L %5d - R %5d ", getLeftPosition(),
-                            getRightPosition() ));
+                                                         getRightPosition() ));
                 }
                 break;
 
