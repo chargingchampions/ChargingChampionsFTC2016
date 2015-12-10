@@ -147,10 +147,10 @@ public class CCTeleOp extends OpMode {
 
         //motor speed for straight drive up the ramp
         if (gamepad1.dpad_down) {
-            motorFrontRight.setPower(0.65);
-            motorBackRight.setPower(0.65);
-            motorBackLeft.setPower(0.65);
-            motorFrontLeft.setPower(0.65);
+            motorFrontRight.setPower(0.25);
+            motorBackRight.setPower(0.25);
+            motorBackLeft.setPower(0.25);
+            motorFrontLeft.setPower(0.25);
         }
         else if (gamepad1.dpad_up) {
             motorFrontRight.setPower(-0.65);
