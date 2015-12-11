@@ -37,17 +37,25 @@ public class CCAutonomousRed extends LinearOpMode
 				(Math.abs(motorFrontRight.getCurrentPosition() - rightEncoderTarget) < 5);
 	}
 
-	/*
-	 * Set motor power to 0 at the end of Autonomous
-	 */
-	public void autoShutdown()
-	{
-		motorRight.setPower(0);
-		motorLeft.setPower(0);
-		motorFrontRight.setPower(0);
-		motorFrontLeft.setPower(0);
-		telemetry.addData("Autonomous", "Completed!");
-	}
+    /*
+     * Set motor power to 0 at the end of Autonomous
+     */
+    public void autoShutdown() throws InterruptedException
+    {
+        //Reset the motor encoders and then stop the motor
+        motorLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        waitOneFullHardwareCycle();
+
+        motorRight.setPower(0);
+        motorLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorFrontLeft.setPower(0);
+
+        telemetry.addData("Autonomous", "Completed!");
+    }
 
 
 	public void robotInit() throws InterruptedException
@@ -67,18 +75,16 @@ public class CCAutonomousRed extends LinearOpMode
 
 		int encoderResetThreshold = 3;
 		motorLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-		motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-
-		while	(Math.abs(motorFrontLeft.getCurrentPosition()) > encoderResetThreshold) {
-			waitForNextHardwareCycle();
-		}
-
 		motorRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 		motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
-		while ((Math.abs(motorFrontRight.getCurrentPosition()) > encoderResetThreshold)) {
+		//while ((Math.abs(motorLeft.getCurrentPosition()) > encoderResetThreshold) &&
+		while	((Math.abs(motorFrontLeft.getCurrentPosition()) > encoderResetThreshold) &&
+				(Math.abs(motorFrontRight.getCurrentPosition()) > encoderResetThreshold)){
 			waitForNextHardwareCycle();
 		}
+
 		step = 1;
 	}
 

@@ -68,7 +68,8 @@ public class CCTeleOp extends OpMode {
         motorBackLeft = hardwareMap.dcMotor.get("back_left");
         motorHookLeft = hardwareMap.dcMotor.get("hook_left");
         motorHookRight = hardwareMap.dcMotor.get("hook_right");
-        motorPulley = hardwareMap.dcMotor.get("pulley");
+      //  motorPulley = hardwareMap.dcMotor.get("pulley");
+        motorPulley = hardwareMap.dcMotor.get("hook_right");
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -150,7 +151,7 @@ public class CCTeleOp extends OpMode {
             motorFrontRight.setPower(0.25);
             motorBackRight.setPower(0.25);
             motorBackLeft.setPower(0.25);
-            motorFrontLeft.setPower(0.25);
+            motorFrontLeft.setPower(0.65);
         }
         else if (gamepad1.dpad_up) {
             motorFrontRight.setPower(-0.65);

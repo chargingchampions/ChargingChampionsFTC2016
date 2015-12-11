@@ -40,12 +40,20 @@ public class CCAutonomousBlue extends LinearOpMode
 	/*
 	 * Set motor power to 0 at the end of Autonomous
 	 */
-	public void autoShutdown()
+	public void autoShutdown() throws InterruptedException
 	{
+		//Reset the motor encoders and then stop the motor
+		motorLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		motorRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		waitOneFullHardwareCycle();
+
 		motorRight.setPower(0);
 		motorLeft.setPower(0);
 		motorFrontRight.setPower(0);
 		motorFrontLeft.setPower(0);
+
 		telemetry.addData("Autonomous", "Completed!");
 	}
 
@@ -68,18 +76,16 @@ public class CCAutonomousBlue extends LinearOpMode
 
 		int encoderResetThreshold = 3;
 		motorLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-		motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-
-		while	(Math.abs(motorFrontLeft.getCurrentPosition()) > encoderResetThreshold) {
-			waitForNextHardwareCycle();
-		}
-
 		motorRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 		motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
-		while ((Math.abs(motorFrontRight.getCurrentPosition()) > encoderResetThreshold)) {
+		//while ((Math.abs(motorLeft.getCurrentPosition()) > encoderResetThreshold) &&
+		while	((Math.abs(motorFrontLeft.getCurrentPosition()) > encoderResetThreshold) &&
+				(Math.abs(motorFrontRight.getCurrentPosition()) > encoderResetThreshold)){
 			waitForNextHardwareCycle();
 		}
+
 		step = 1;
 	}
 
@@ -145,7 +151,7 @@ public class CCAutonomousBlue extends LinearOpMode
 
 				case 3:
 					// Drive to the beacon repair zone
-					telemetry.addData("Status", "Driving forward to beacon repair zone ");
+					telemetry.addData("Status", "Driving forward to beacon repair zone");
 
 					if (!robotMoving) {
 						robotMove(7000,7000);

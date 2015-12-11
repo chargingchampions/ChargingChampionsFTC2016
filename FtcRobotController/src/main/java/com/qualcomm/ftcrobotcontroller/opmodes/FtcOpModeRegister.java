@@ -66,7 +66,7 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("CCTeleOp", CCTeleOp.class);
     manager.register("CCAutonomousRed", CCAutonomousRed.class);
     manager.register("CCAutonomousBlue", CCAutonomousBlue.class);
-
+    manager.register("CCTestAutonomous2", CCTestAutonomous2.class);
 
 
     /*
