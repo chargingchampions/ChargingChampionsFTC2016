@@ -68,8 +68,7 @@ public class CCTeleOp extends OpMode {
         motorBackLeft = hardwareMap.dcMotor.get("back_left");
         motorHookLeft = hardwareMap.dcMotor.get("hook_left");
         motorHookRight = hardwareMap.dcMotor.get("hook_right");
-      //  motorPulley = hardwareMap.dcMotor.get("pulley");
-        motorPulley = hardwareMap.dcMotor.get("hook_right");
+        motorPulley = hardwareMap.dcMotor.get("pulley");
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
