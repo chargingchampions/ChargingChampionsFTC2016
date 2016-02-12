@@ -12,6 +12,8 @@ public class CCAutonomous extends LinearOpMode {
     OpticalDistanceSensor opticalDistanceSensor;
     //Drive motors
     DcMotor motorFrontRight,motorFrontLeft, motorBackRight, motorBackLeft;
+    // Set initial encoder positions for left and right motors
+    int leftEncoderTarget = 0, rightEncoderTarget = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -25,18 +27,18 @@ public class CCAutonomous extends LinearOpMode {
 
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
-        /*motorFrontRight.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+
+        motorFrontRight.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         motorFrontLeft.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         motorBackRight.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        motorBackLeft.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS); */
-        waitForStart();
-        // Reset enoders to zero
-      /*  motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorBackLeft.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
+        motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         motorBackLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         motorBackRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         waitOneFullHardwareCycle(); // We use these in attempt to gain stability.
-
+        waitForStart();
+        // Reset enoders to zero
 
         motorFrontLeft.setTargetPosition(2440);
         motorFrontRight.setTargetPosition(2440);
@@ -47,11 +49,12 @@ public class CCAutonomous extends LinearOpMode {
         motorFrontLeft.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         motorBackRight.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         motorBackLeft.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        motorFrontLeft.setPower(0.5);
-        motorFrontRight.setPower(0.5);
-        motorBackLeft.setPower(0.5);
-        motorBackRight.setPower(0.5);*/
+        motorFrontLeft.setPower(1.0);
+        motorFrontRight.setPower(1.0);
+        motorBackLeft.setPower(1.0);
+        motorBackRight.setPower(1.0);
 
+        /*
         double reflectance = opticalDistanceSensor.getLightDetected();
 
         while (reflectance < 0.189) {
@@ -71,14 +74,45 @@ public class CCAutonomous extends LinearOpMode {
             motorFrontLeft.setPower(0);
             motorFrontRight.setPower(0);
             motorFrontLeft.setPower(0);
-        }
+        } */
 
-        telemetry.addData("1 ", "ODS:  " + String.format("%.2f", reflectance));
+       // telemetry.addData("1 ", "ODS:  " + String.format("%.2f", reflectance));
         telemetry.addData("2 ", "motorFrontLeft:  " + String.format("%d", motorFrontLeft.getCurrentPosition()));
         telemetry.addData("3 ", "motorFrontRight:  " + String.format("%d", motorFrontRight.getCurrentPosition()));
         telemetry.addData("4 ", "motorBackLeft:  " + String.format("%d", motorBackLeft.getCurrentPosition()));
         telemetry.addData("5 ", "motorBackRight:  " + String.format("%d", motorBackRight.getCurrentPosition()));
     }
 
+    public boolean moveComplete() throws InterruptedException
+    {
+        waitOneFullHardwareCycle();
+        return 	(Math.abs(motorFrontLeft.getCurrentPosition() - leftEncoderTarget) < 5) &&
+                (Math.abs(motorFrontRight.getCurrentPosition() - rightEncoderTarget) < 5);
+    }
+
+    public void autoShutdown() throws InterruptedException
+    {
+        //Reset the motor encoders and then stop the motor
+        motorBackLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorBackRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        waitOneFullHardwareCycle();
+
+        motorBackRight.setPower(0);
+        motorBackLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorFrontLeft.setPower(0);
+
+        motorBackLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorFrontLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorBackRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorFrontRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+
+        waitOneFullHardwareCycle();
+
+        telemetry.addData("motor mode:", motorBackLeft.getMode().toString());
+        telemetry.addData("Autonomous", "Completed!");
+    }
 
 }

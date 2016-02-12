@@ -2,6 +2,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.Range;
@@ -13,6 +14,7 @@ import com.qualcomm.robotcore.util.Range;
 public class CCTeleOp extends OpMode {
     //4 Drive motors
     DcMotor motorFrontRight,motorFrontLeft, motorBackRight, motorBackLeft;
+
 
     // Motors for Hook and Pulley
     DcMotor motorHookRight, motorHookLeft, motorPulley;
@@ -71,6 +73,16 @@ public class CCTeleOp extends OpMode {
         motorPulley = hardwareMap.dcMotor.get("pulley");
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
+
+        motorBackLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorBackRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+
+        motorBackLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorBackRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorFrontLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorFrontRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
         //reverse direction of right hook will make the spools unwind in the same direction
         motorHookRight.setDirection(DcMotor.Direction.REVERSE);
@@ -231,10 +243,10 @@ public class CCTeleOp extends OpMode {
 
         // operate ball sweep servo to clear debris
         if (gamepad2.left_trigger > 0.75) {
-            ballSweep.setPosition(0.85);
+            ballSweep.setPosition(0.8);
         }
         else if (gamepad2.right_trigger > 0.75) {
-            ballSweep.setPosition(0.15);
+            ballSweep.setPosition(0.35);
         }
         else {
             ballSweep.setPosition(0.5);
@@ -264,7 +276,15 @@ public class CCTeleOp extends OpMode {
      */
     @Override
     public void stop() {
+        motorBackLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorBackRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
+        motorBackLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorBackRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorFrontLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        motorFrontRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
     }
 
