@@ -113,133 +113,139 @@ public class CCAutonomousRed extends LinearOpMode
 		waitForStart();
 
 		//waitOneFullHardwareCycle();
+		try {
 
-		double reflectance = opticalDistanceSensor.getLightDetected();
-		while (opModeIsActive()) {
-			switch (step) {
-				case 1:
-					//Drive the robot forward from the start zone
-					if (!robotMoving) {
-                        // Robot moves 50 inches
-                       /* int distance = caculateEncoderTicks(50);
-                        robotMove(distance, distance);
-                        telemetry.addData("A.  ", "distance:  " + distance);*/
-						robotMove(4500, 4500);
-						robotMoving = true;
-					}
+			double reflectance = opticalDistanceSensor.getLightDetected();
+			while (opModeIsActive()) {
+				switch (step) {
+					case 1:
+						//Drive the robot forward from the start zone
+						if (!robotMoving) {
+							// Robot moves 50 inches
+						   /* int distance = caculateEncoderTicks(50);
+							robotMove(distance, distance);
+							telemetry.addData("A.  ", "distance:  " + distance);*/
+							robotMove(4500, 4500);
+							robotMoving = true;
+						}
 
-					reflectance = opticalDistanceSensor.getLightDetected();
-					telemetry.addData("1 ", "ODS:  " + String.format("%.2f", reflectance));
-					telemetry.addData("MoveTo Back ", "Left: " + motorBackLeft.getTargetPosition() + " Right: " + motorBackRight.getTargetPosition());
-					telemetry.addData("MoveTo Front ", "Left: " + motorFrontLeft.getTargetPosition() + " Right: " + motorFrontRight.getTargetPosition());
-					if (!moveComplete()) {
-
-						telemetry.addData("PositionBack:", "Left: " + motorBackLeft.getCurrentPosition() + " Right: " + motorBackRight.getCurrentPosition());
-						telemetry.addData("PositionFront:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-					} else {
-						telemetry.addData("SucceededPositionBack", "Left: " + motorBackLeft.getCurrentPosition() + " Right: " + motorBackRight.getCurrentPosition());
-						telemetry.addData("SucceededPositionFront", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-						robotMoving = false;
-						step++;
-					}
-					break;
-
-				case 2:
-					// Make a 90 degree left return
-					telemetry.addData("Drive:", motorBackLeft.toString());
-					telemetry.addData("Status", "Turning Left");
-
-					if (!robotMoving) {
-						robotMove(1000,-2000);
-						robotMoving = true;
-					}
-
-					if (!moveComplete()) {
-						telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-					} else {
-						telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-						robotMoving = false;
-						step++;
-					}
-					reflectance = opticalDistanceSensor.getLightDetected();
-					telemetry.addData("2 ", "ODS:  " + String.format("%.2f", reflectance));
-
-					break;
-
-				case 3:
-					// Drive to the beacon repair zone
-					telemetry.addData("Status", "Driving forward ");
-
-					if (!robotMoving) {
-                        //robotMove(caculateEncoderTicks(36), caculateEncoderTicks(36));
-						robotMove(6400,6400);
-						robotMoving = true;
-					}
-
-					if (!moveComplete()) {
-						telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-					} else {
 						reflectance = opticalDistanceSensor.getLightDetected();
-						telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-						telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
-						robotMoving = false;
-						step++;
-					}
+						telemetry.addData("1 ", "ODS:  " + String.format("%.2f", reflectance));
+						telemetry.addData("MoveTo Back ", "Left: " + motorBackLeft.getTargetPosition() + " Right: " + motorBackRight.getTargetPosition());
+						telemetry.addData("MoveTo Front ", "Left: " + motorFrontLeft.getTargetPosition() + " Right: " + motorFrontRight.getTargetPosition());
+						if (!moveComplete()) {
 
-					reflectance = opticalDistanceSensor.getLightDetected();
-					telemetry.addData("3 ", "ODS:  " + String.format("%.2f", reflectance));
-					break;
-                case 4:
-                    // Drive to the beacon repair zone
-                    telemetry.addData("Status", "make a slight left");
+							telemetry.addData("PositionBack:", "Left: " + motorBackLeft.getCurrentPosition() + " Right: " + motorBackRight.getCurrentPosition());
+							telemetry.addData("PositionFront:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+						} else {
+							telemetry.addData("SucceededPositionBack", "Left: " + motorBackLeft.getCurrentPosition() + " Right: " + motorBackRight.getCurrentPosition());
+							telemetry.addData("SucceededPositionFront", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							robotMoving = false;
+							step++;
+						}
+						break;
 
-                    if (!robotMoving) {
-                        //robotMove(caculateEncoderTicks(36), caculateEncoderTicks(36));
-                        robotMove(1000,-2000);
-                        robotMoving = true;
-                    }
+					case 2:
+						// Make a 90 degree left return
+						telemetry.addData("Drive:", motorBackLeft.toString());
+						telemetry.addData("Status", "Turning Left");
 
-                    if (!moveComplete()) {
-                        telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-                    } else {
-                        reflectance = opticalDistanceSensor.getLightDetected();
-                        telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-                        telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
-                        robotMoving = false;
-                        step++;
-                    }
+						if (!robotMoving) {
+							robotMove(1000, -2000);
+							robotMoving = true;
+						}
 
-                    reflectance = opticalDistanceSensor.getLightDetected();
-                    telemetry.addData("4 ", "ODS:  " + String.format("%.2f", reflectance));
-                    break;
-				case 5:
-					//Rotate the robot to position the shelter arm ready to drop in to the basket
-					telemetry.addData("Status", "Drive forward ");
-
-					if (!robotMoving) {
-						robotMove(3000,3000);
-						robotMoving = true;
-					}
-
-					if (!moveComplete()) {
-						telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-					} else {
+						if (!moveComplete()) {
+							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+						} else {
+							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							robotMoving = false;
+							step++;
+						}
 						reflectance = opticalDistanceSensor.getLightDetected();
-						telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-						telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
-						robotMoving = false;
-						step++;
+						telemetry.addData("2 ", "ODS:  " + String.format("%.2f", reflectance));
+
+						break;
+
+					case 3:
+						// Drive to the beacon repair zone
+						telemetry.addData("Status", "Driving forward ");
+
+						if (!robotMoving) {
+							//robotMove(caculateEncoderTicks(36), caculateEncoderTicks(36));
+							robotMove(6400, 6400);
+							robotMoving = true;
+						}
+
+						if (!moveComplete()) {
+							telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+						} else {
+							reflectance = opticalDistanceSensor.getLightDetected();
+							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
+							robotMoving = false;
+							step++;
+						}
+
+						reflectance = opticalDistanceSensor.getLightDetected();
+						telemetry.addData("3 ", "ODS:  " + String.format("%.2f", reflectance));
+						break;
+					case 4:
+						// Drive to the beacon repair zone
+						telemetry.addData("Status", "make a slight left");
+
+						if (!robotMoving) {
+							//robotMove(caculateEncoderTicks(36), caculateEncoderTicks(36));
+							robotMove(1000, -2000);
+							robotMoving = true;
+						}
+
+						if (!moveComplete()) {
+							telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+						} else {
+							reflectance = opticalDistanceSensor.getLightDetected();
+							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
+							robotMoving = false;
+							step++;
+						}
+
+						reflectance = opticalDistanceSensor.getLightDetected();
+						telemetry.addData("4 ", "ODS:  " + String.format("%.2f", reflectance));
+						break;
+					case 5:
+						//Rotate the robot to position the shelter arm ready to drop in to the basket
+						telemetry.addData("Status", "Drive forward ");
+
+						if (!robotMoving) {
+							robotMove(3000, 3000);
+							robotMoving = true;
+						}
+
+						if (!moveComplete()) {
+							telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+						} else {
+							reflectance = opticalDistanceSensor.getLightDetected();
+							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
+							robotMoving = false;
+							step++;
+							autoShutdown();
+						}
+						reflectance = opticalDistanceSensor.getLightDetected();
+						telemetry.addData("5 ", "ODS:  " + String.format("%.2f", reflectance));
+						break;
+
+					default:
 						autoShutdown();
-                    }
-					reflectance = opticalDistanceSensor.getLightDetected();
-					telemetry.addData("5 ", "ODS:  " + String.format("%.2f", reflectance));
-					break;
-
-				default:
-                    autoShutdown();
-					break;
+						break;
+				}
+				waitOneFullHardwareCycle();
 			}
-			waitOneFullHardwareCycle();
+		} catch (InterruptedException ie) {
+
+		} finally {
+			autoShutdown();
 		}
 	}
 
