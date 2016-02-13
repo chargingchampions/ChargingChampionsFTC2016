@@ -27,47 +27,8 @@ public class CCAutonomousRed extends LinearOpMode
 	DcMotor motorBackLeft, motorFrontLeft;
 
 	/*
-	 * Get the currentPosition of the motor to determine if
-	 * it has reached the target position needed
+	 * Initialize motors, servos and sensors
 	 */
-	public boolean moveComplete() throws InterruptedException
-	{
-		waitOneFullHardwareCycle();
-		return 	(Math.abs(motorFrontLeft.getCurrentPosition() - leftEncoderTarget) < 5) ||
-				(Math.abs(motorFrontRight.getCurrentPosition() - rightEncoderTarget) < 5) ||
-                (Math.abs(motorBackLeft.getCurrentPosition() - leftEncoderTarget) < 5) ||
-                (Math.abs(motorBackRight.getCurrentPosition() - rightEncoderTarget) < 5);
-	}
-
-    /*
-     * Set motor power to 0 at the end of Autonomous
-     */
-    public void autoShutdown() throws InterruptedException
-    {
-        //Reset the motor encoders and then stop the motor
-        motorBackLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorBackRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        waitOneFullHardwareCycle();
-
-        motorBackRight.setPower(0);
-        motorBackLeft.setPower(0);
-        motorFrontRight.setPower(0);
-        motorFrontLeft.setPower(0);
-
-        motorBackLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorFrontLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorBackRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        motorFrontRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-
-        waitOneFullHardwareCycle();
-
-        telemetry.addData("motor mode:", motorBackLeft.getMode().toString());
-        telemetry.addData("Autonomous", "Completed!");
-    }
-
-
 	public void robotInit() throws InterruptedException
 	{
 		// Initialize motors from hardware mapping.
@@ -95,7 +56,6 @@ public class CCAutonomousRed extends LinearOpMode
 		motorFrontLeft.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 		motorFrontRight.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 
-		//while ((Math.abs(motorBackLeft.getCurrentPosition()) > encoderResetThreshold) &&
 		while	((Math.abs(motorBackLeft.getCurrentPosition()) > encoderResetThreshold) &&
 				(Math.abs(motorBackRight.getCurrentPosition()) > encoderResetThreshold)){
             telemetry.addData("getCurrentPosition: ", motorFrontLeft.getCurrentPosition());
@@ -128,18 +88,10 @@ public class CCAutonomousRed extends LinearOpMode
 							robotMove(4500, 4500);
 							robotMoving = true;
 						}
-
-						reflectance = opticalDistanceSensor.getLightDetected();
-						telemetry.addData("1 ", "ODS:  " + String.format("%.2f", reflectance));
-						telemetry.addData("MoveTo Back ", "Left: " + motorBackLeft.getTargetPosition() + " Right: " + motorBackRight.getTargetPosition());
-						telemetry.addData("MoveTo Front ", "Left: " + motorFrontLeft.getTargetPosition() + " Right: " + motorFrontRight.getTargetPosition());
 						if (!moveComplete()) {
-
-							telemetry.addData("PositionBack:", "Left: " + motorBackLeft.getCurrentPosition() + " Right: " + motorBackRight.getCurrentPosition());
-							telemetry.addData("PositionFront:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							displayEncoderValues();
 						} else {
-							telemetry.addData("SucceededPositionBack", "Left: " + motorBackLeft.getCurrentPosition() + " Right: " + motorBackRight.getCurrentPosition());
-							telemetry.addData("SucceededPositionFront", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							displayEncoderValues();
 							robotMoving = false;
 							step++;
 						}
@@ -156,15 +108,12 @@ public class CCAutonomousRed extends LinearOpMode
 						}
 
 						if (!moveComplete()) {
-							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							displayEncoderValues();
 						} else {
-							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							displayEncoderValues();
 							robotMoving = false;
 							step++;
 						}
-						reflectance = opticalDistanceSensor.getLightDetected();
-						telemetry.addData("2 ", "ODS:  " + String.format("%.2f", reflectance));
-
 						break;
 
 					case 3:
@@ -178,17 +127,13 @@ public class CCAutonomousRed extends LinearOpMode
 						}
 
 						if (!moveComplete()) {
-							telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							displayEncoderValues();
 						} else {
 							reflectance = opticalDistanceSensor.getLightDetected();
-							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-							telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
+							displayEncoderValues();
 							robotMoving = false;
 							step++;
 						}
-
-						reflectance = opticalDistanceSensor.getLightDetected();
-						telemetry.addData("3 ", "ODS:  " + String.format("%.2f", reflectance));
 						break;
 					case 4:
 						// Drive to the beacon repair zone
@@ -201,11 +146,10 @@ public class CCAutonomousRed extends LinearOpMode
 						}
 
 						if (!moveComplete()) {
-							telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							displayEncoderValues();
 						} else {
 							reflectance = opticalDistanceSensor.getLightDetected();
-							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-							telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
+							displayEncoderValues();
 							robotMoving = false;
 							step++;
 						}
@@ -223,11 +167,10 @@ public class CCAutonomousRed extends LinearOpMode
 						}
 
 						if (!moveComplete()) {
-							telemetry.addData("Position:", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+							displayEncoderValues();
 						} else {
 							reflectance = opticalDistanceSensor.getLightDetected();
-							telemetry.addData("SucceededPosition", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
-							telemetry.addData("final ", "ODS:  " + String.format("%.2f", reflectance));
+							displayEncoderValues();
 							robotMoving = false;
 							step++;
 							autoShutdown();
@@ -249,6 +192,47 @@ public class CCAutonomousRed extends LinearOpMode
 		}
 	}
 
+	/*
+	 * Get the currentPosition of the motor to determine if
+	 * it has reached the target position needed
+	 */
+	public boolean moveComplete() throws InterruptedException
+	{
+		waitOneFullHardwareCycle();
+		return 	(Math.abs(motorFrontLeft.getCurrentPosition() - leftEncoderTarget) < 5) ||
+				(Math.abs(motorFrontRight.getCurrentPosition() - rightEncoderTarget) < 5) ||
+				(Math.abs(motorBackLeft.getCurrentPosition() - leftEncoderTarget) < 5) ||
+				(Math.abs(motorBackRight.getCurrentPosition() - rightEncoderTarget) < 5);
+	}
+
+	/*
+     * Set motor power to 0 at the end of Autonomous
+     */
+	public void autoShutdown() throws InterruptedException
+	{
+		//Reset the motor encoders and then stop the motor
+		motorBackLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		motorFrontLeft.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		motorBackRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		motorFrontRight.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+		waitOneFullHardwareCycle();
+
+		motorBackRight.setPower(0);
+		motorBackLeft.setPower(0);
+		motorFrontRight.setPower(0);
+		motorFrontLeft.setPower(0);
+
+		motorBackLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+		motorFrontLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+		motorBackRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+		motorFrontRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+
+		waitOneFullHardwareCycle();
+
+		telemetry.addData("motor mode:", motorBackLeft.getMode().toString());
+		telemetry.addData("Autonomous", "Completed!");
+	}
+
     /*
      * Encoderticks = (360/Circumference)* DistanceToTravel
      * Diameter of the wheel is 4"
@@ -268,7 +252,6 @@ public class CCAutonomousRed extends LinearOpMode
 		motorBackRight.setTargetPosition(rightEncoderTarget);
 		motorFrontLeft.setTargetPosition(leftEncoderTarget);
 		motorFrontRight.setTargetPosition(rightEncoderTarget);
-        telemetry.addData("B ", "leftEncoderTarget:  " +leftEncoderTarget);
 
         motorBackLeft.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         motorBackRight.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
@@ -279,6 +262,11 @@ public class CCAutonomousRed extends LinearOpMode
 		motorBackRight.setPower(1.0);
 		motorFrontLeft.setPower(1.0);
 		motorFrontRight.setPower(1.0);
+	}
+
+	public void displayEncoderValues() {
+		telemetry.addData("SucceededPosition-Front", "Left: " + motorFrontLeft.getCurrentPosition() + " Right: " + motorFrontRight.getCurrentPosition());
+		telemetry.addData("SucceededPosition-Back", "Left: " + motorBackLeft.getCurrentPosition() + " Right: " + motorBackRight.getCurrentPosition());
 	}
 
 }
