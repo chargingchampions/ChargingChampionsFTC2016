@@ -1,37 +1,4 @@
-/* Copyright (c) 2014 Qualcomm Technologies Inc
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted (subject to the limitations in the disclaimer below) provided that
-the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this list
-of conditions and the following disclaimer.
-
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-Neither the name of Qualcomm Technologies Inc nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.
-
-NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
-LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-
 package com.qualcomm.ftcrobotcontroller.opmodes;
-
-import android.util.Log;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -42,10 +9,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import java.lang.reflect.Constructor;
 
 //------------------------------------------------------------------------------
-// CCAutonomousBlue.java
+// CCAutonomousRed.java
 //------------------------------------------------------------------------------
 // Extends the OpMode class to provide a Example Autonomous code
 //------------------------------------------------------------------------------
@@ -64,7 +30,7 @@ import java.lang.reflect.Constructor;
  * An "Event" can cause a change in the state.  One or more "Actions" are performed when moving on to next state
  */
 
-public class CCAutonomousBlue extends OpMode
+public class CCAutoRedWithShelter extends OpMode
 {
     // A list of system States.
     private enum State
@@ -81,16 +47,18 @@ public class CCAutonomousBlue extends OpMode
     }
 
     // Define driving paths as pairs of relative wheel movements in inches (left,right) plus speed %
+    // Note: this is a dummy path, and is NOT likely to actually work with YOUR robot.
     final PathSeg[] mBeaconPath = {
-            new PathSeg( 19.5, 19.5, 0.5),  // Forward
-            new PathSeg( -22.5, 9.0, 0.2),  // Right
-            new PathSeg( 30.0, 30.0, 0.5),  // Forward
+            new PathSeg( 24.0, 14.0, 0.5),    // Forward
+            new PathSeg( -0.5, -10.0, 0.2),      // Left
+            new PathSeg( 13.4, 13.4, 0.5),    // Forward
     };
 
+
     final PathSeg[] mMountainPath = {
-            new PathSeg( 0.0, 0.0, 0.0),  // Left Rev
-            new PathSeg( 0.0, 0.0, 0.0),  // Backup
-            new PathSeg( 0.0, 0.0, 0.0),  // Right Rev
+            new PathSeg(  0.0, 0.0, 0.0),  // Left Rev
+            new PathSeg(0.0,0.0, 0.0),  // Backup
+            new PathSeg(0.0,  0.0, 0.0),  // Right Rev
             new PathSeg( 0.0, 0.0, 0.0),  // Forward
     };
 
@@ -134,7 +102,7 @@ public class CCAutonomousBlue extends OpMode
     private int         mRightEncoderTarget;
 
     // Loop cycle time stats variables
-    public ElapsedTime  mRuntime = new ElapsedTime();   // Time into round.
+    public ElapsedTime mRuntime = new ElapsedTime();   // Time into round.
 
     private ElapsedTime mStateTime = new ElapsedTime();  // Time into current state
     private double  startTime;
@@ -145,9 +113,9 @@ public class CCAutonomousBlue extends OpMode
 
 
     //--------------------------------------------------------------------------
-    // Constructor
+    //constructor
     //--------------------------------------------------------------------------
-    public CCAutonomousBlue()
+    public CCAutoRedWithShelter()
     {
     }
 
@@ -203,7 +171,7 @@ public class CCAutonomousBlue extends OpMode
 
         odsInitialValue=mDistance.getLightDetected();
         telemetry.addData("ODSInitial: ", odsInitialValue);
-        
+
 
         setDrivePower(0, 0);        // Ensure motors are off
         resetDriveEncoders();       // Reset Encoders to Zero
@@ -253,6 +221,7 @@ public class CCAutonomousBlue extends OpMode
         //   else
         // 3: If no EVENT is found, do processing for the current STATE and send TELEMETRY data for STATE.
         //
+
         if (firstTenSecondsDone) {
             switch (mCurrentState) {
                 case STATE_INITIAL:         // Stay in this state until encoders are both Zero.
@@ -340,11 +309,9 @@ public class CCAutonomousBlue extends OpMode
                         setDriveSpeed(0.0, 0.0);                // Action: Stop pushing
                         double odsSecondValue = mDistance.getLightDetected();
 
-                        if ((odsInitialValue * 4) < odsSecondValue) {
-                            shelter.setPosition(0.3);     // Action:  Start deploying climbers.
-                        } else
-                            telemetry.addData("odsSecondValue: ", odsSecondValue);
-                        newState(State.STATE_DEPLOY_CLIMBERS);  // Next State:
+                         shelter.setPosition(0.3);     // Action:  Start deploying climbers.
+                         telemetry.addData("odsSecondValue: ", odsSecondValue);
+                         newState(State.STATE_DEPLOY_CLIMBERS);  // Next State:
                     } else
                         telemetry.addData("Autonomous", "<1!");
                     break;
@@ -394,7 +361,6 @@ public class CCAutonomousBlue extends OpMode
 
                 case STATE_STOP:
                     shelter.setPosition(0.5);
-                    telemetry.addData("Runtime: ", mRuntime.toString());
                     if (mRuntime.time()> 28.0) {
                         useConstantPower();
                         setDrivePower(0, 0);
@@ -529,12 +495,12 @@ public class CCAutonomousBlue extends OpMode
     void synchEncoders()
     {
         //	get and set the encoder targets
-        mLeftEncoderTarget = motorFrontLeft.getCurrentPosition();
-        mRightEncoderTarget = motorFrontRight.getCurrentPosition();
+        mLeftEncoderTarget = motorBackLeft.getCurrentPosition();
+        mRightEncoderTarget = motorBackRight.getCurrentPosition();
     }
 
     //--------------------------------------------------------------------------
-    // setDriveMode ()a
+    // setDriveMode ()
     // Set both drive motors to new mode if they need changing.
     //--------------------------------------------------------------------------
     public void setDriveMode(DcMotorController.RunMode mode)
@@ -604,8 +570,7 @@ public class CCAutonomousBlue extends OpMode
     //--------------------------------------------------------------------------
     boolean encodersAtZero()
     {
-        return ((Math.abs(getFrontLeftPosition()) < 5) && (Math.abs(getFrontRightPosition()) < 5) &&
-                (Math.abs(getBackLeftPosition()) < 5) && (Math.abs(getBackRightPosition()) < 5) );
+        return ((Math.abs(getFrontLeftPosition()) < 5) && (Math.abs(getFrontRightPosition()) < 5));
     }
 
     /*
@@ -638,7 +603,6 @@ public class CCAutonomousBlue extends OpMode
             // Load up the next motion based on the current segemnt.
             Left  = (int)(mCurrentPath[mCurrentSeg].mLeft * COUNTS_PER_INCH);
             Right = (int)(mCurrentPath[mCurrentSeg].mRight * COUNTS_PER_INCH);
-            DbgLog.msg("setting encoders, left: "+ Left+" Right: "+Right);
             addEncoderTarget(Left, Right);
             setDriveSpeed(mCurrentPath[mCurrentSeg].mSpeed, mCurrentPath[mCurrentSeg].mSpeed);
 

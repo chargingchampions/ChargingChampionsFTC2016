@@ -64,7 +64,7 @@ import java.lang.reflect.Constructor;
  * An "Event" can cause a change in the state.  One or more "Actions" are performed when moving on to next state
  */
 
-public class CCAutonomousBlue extends OpMode
+public class CCAutoBlueWithShelter extends OpMode
 {
     // A list of system States.
     private enum State
@@ -147,7 +147,7 @@ public class CCAutonomousBlue extends OpMode
     //--------------------------------------------------------------------------
     // Constructor
     //--------------------------------------------------------------------------
-    public CCAutonomousBlue()
+    public CCAutoBlueWithShelter()
     {
     }
 
@@ -203,7 +203,7 @@ public class CCAutonomousBlue extends OpMode
 
         odsInitialValue=mDistance.getLightDetected();
         telemetry.addData("ODSInitial: ", odsInitialValue);
-        
+
 
         setDrivePower(0, 0);        // Ensure motors are off
         resetDriveEncoders();       // Reset Encoders to Zero
@@ -340,9 +340,9 @@ public class CCAutonomousBlue extends OpMode
                         setDriveSpeed(0.0, 0.0);                // Action: Stop pushing
                         double odsSecondValue = mDistance.getLightDetected();
 
-                        if ((odsInitialValue * 4) < odsSecondValue) {
+                        //if ((odsInitialValue * 4) < odsSecondValue) {
                             shelter.setPosition(0.3);     // Action:  Start deploying climbers.
-                        } else
+                      //  } else
                             telemetry.addData("odsSecondValue: ", odsSecondValue);
                         newState(State.STATE_DEPLOY_CLIMBERS);  // Next State:
                     } else
@@ -350,7 +350,7 @@ public class CCAutonomousBlue extends OpMode
                     break;
 
                 case STATE_DEPLOY_CLIMBERS:     // wait 2 seconds while servos move and deposit climbers
-                    if (mStateTime.time() > 2.0) {
+                    if (mStateTime.time() > 4.0) {
                         telemetry.addData("Autonomous", ">2!");
                         shelter.setPosition(0.7);    // Put servo into "starting position"
                         //startPath(mMountainPath);               // Action: Load path to Mountain
@@ -394,7 +394,6 @@ public class CCAutonomousBlue extends OpMode
 
                 case STATE_STOP:
                     shelter.setPosition(0.5);
-                    telemetry.addData("Runtime: ", mRuntime.toString());
                     if (mRuntime.time()> 28.0) {
                         useConstantPower();
                         setDrivePower(0, 0);

@@ -162,7 +162,7 @@ public class CCTeleOp extends OpMode {
             motorFrontRight.setPower(0.25);
             motorBackRight.setPower(0.25);
             motorBackLeft.setPower(0.25);
-            motorFrontLeft.setPower(0.65);
+            motorFrontLeft.setPower(0.25);
         }
         else if (gamepad1.dpad_up) {
             motorFrontRight.setPower(-0.65);
@@ -177,7 +177,7 @@ public class CCTeleOp extends OpMode {
         // of the gears attached to the gear motors.
         float pulley = hook * 1 / 2;
 
-        // if gamepad2.left and right stick were pressed, read the input
+                // if gamepad2.left and right stick were pressed, read the input
         // scale power and set power for the Hook and pulley motors
         if (hook != 0.0 && pulley != 0.0) {
             motorHookLeft.setPower(hook);
